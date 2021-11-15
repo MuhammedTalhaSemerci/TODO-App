@@ -33,6 +33,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<option value="2" selected>Sehpa ve Serçe Parmağı !!</option>
 				<option value="1">Çözülmüş Bağcıklar !</option>
 			</select>
+			<label for="todoUpdateKeywords"><h5>Anahtar Kelimeler</h5></label><input type="text" class="form-control" style="margin-bottom:20px;" id="todoUpdateKeywords" placeholder="ödev, matematik...">
 		</div>
 		<div class="modal-footer">
 			<button type="button" class="btn btn-secondary" data-dismiss="modal">Kapat</button>
@@ -53,15 +54,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<option value="2" selected>Sehpa ve Serçe Parmağı !!</option>
 				<option value="1">Çözülmüş Bağcıklar !</option>
 			</select>
+			<label for="todoInsertKeywords"><h5>Anahtar Kelimeler</h5></label><input type="text" class="form-control" style="margin-bottom:20px;" id="todoInsertKeywords" placeholder="ödev, matematik...">
 
 			<button class="col-lg-2 col-md-2 form-control"style="margin:auto;" onclick="todoInsert()">Kaydet</button>
 		</div>
 		
 		<div class="todo-div">
-	
 			<div class="todo-div-inner form-control">
+			<label for="listSearch">Arama: </label><input type="text" class="form-control" id="listSearch" value="">
+
 				<table class="todo-table">
-					<thead><tr><td>İşlemler</td><td>Başlık</td><td>Bitiş Tarihi</td><td>Önem Derecesi</td></tr></thead>
+					<thead><tr><td>Listeleme</td><td>İşlemler</td><td>Başlık</td><td>Bitiş Tarihi</td><td>Önem Derecesi</td><td>Anahtar Kelimeler</td></tr></thead>
 					<tbody id="todo-list-body">
 					</tbody>
 				</table>

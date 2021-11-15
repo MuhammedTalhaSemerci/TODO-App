@@ -23,6 +23,9 @@ class todoListModel extends CI_Model
         $this->db->select('*');
         $this->db->from('lists');
 		$this->db->like('listName', $search);
+		$this->db->or_like('listDate', $search);
+		$this->db->or_like('listContent', $search);
+
         $query = $this->db->get();
         return $query->result();
     }
@@ -31,13 +34,13 @@ class todoListModel extends CI_Model
         $query = $this->db->insert("lists",$data);
         return $query; 
     }
-    public function update($listName,$listDate,$listContent,$listStress,$where = array())
+    public function update($listName,$listDate,$listContent,$listStress,$listKeywords,$where = array())
     {
         $this->db->set('listName', $listName);
         $this->db->set('listDate', $listDate);
         $this->db->set('listContent', $listContent);
         $this->db->set('listStress', $listStress);
-
+        $this->db->set('listKeywords', $listKeywords);
         $this->db->where($where);
         $query = $this->db->update("lists");
         return $query; 
@@ -48,4 +51,5 @@ class todoListModel extends CI_Model
         $query = $this->db->delete('lists');
         return $query;
     }
+
 }

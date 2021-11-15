@@ -7,16 +7,35 @@ tinymce.init({
 });
 
 
-function refresh()
+function listIt(listlocation="/?/todoList/refresh/",data={})
 {
-    $.post("/?/todoList/refresh/",{},function(returnval){
-        if(parseInt(returnval) !== null)
+    $.post(listlocation,data,function(returnval){
+        if(parseInt(returnval) == "0")
+        {
+            listIt()
+        }
+        else
         {
             todoList = JSON.parse(returnval)
             var html = '';
             for(var i=0;i<todoList.length;i++)
             {
                 /* The buttons that we use to control our todos */
+                var indexStepUp =""; // It changes index to down side of screen 
+                var indexStepDown =""; // It changes index to upper side of screen 
+
+                switch (i) {
+                    case 0:
+                        var indexStepUp = '<button  type="button" style="margin:2px;" class="reLocateBut" data-id1="'+todoList[i].id+'" data-id2="'+todoList[i+1].id+'" onclick="reLocate(this);"><i class="fas fa-sort-numeric-down-alt"></i></button>';
+                        break;
+                    case todoList.length-1:
+                        var indexStepDown = '<button  type="button" style="margin:2px;" class="reLocateBut" data-id1="'+todoList[i].id+'" data-id2="'+todoList[i-1].id+'" onclick="reLocate(this);"><i class="fas fa-sort-numeric-up"></i></button>';
+                        break;
+                    default:
+                        var indexStepUp = '<button  type="button" style="margin:2px;" class="reLocateBut" data-id1="'+todoList[i].id+'" data-id2="'+todoList[i+1].id+'" onclick="reLocate(this);"><i class="fas fa-sort-numeric-down-alt"></i></button>';
+                        var indexStepDown = '<button  type="button" style="margin:2px;" class="reLocateBut" data-id1="'+todoList[i].id+'" data-id2="'+todoList[i-1].id+'" onclick="reLocate(this);"><i class="fas fa-sort-numeric-up"></i></button>';
+                        break;
+                }
                 var arrangementBut = '<button  type="button" style="margin:2px;" class="arrangement-but" data-id="'+todoList[i].id+'" onclick="arrangementModalIndex(this);"><i class="fas fa-pen"></i></button>';
                 var deleteBut = '<button style="margin:2px;" class="delete-but" data-id="'+todoList[i].id+'" onclick="todoDelete(this);"><i class="fas fa-trash-alt"></i></button>';
                 
@@ -54,7 +73,18 @@ function refresh()
                 }
                 /* List Stress control end */
                 
-                html += '<tr '+bgColorControl+'><td>'+arrangementBut+deleteBut+'</td><td>'+listName+'</td><td>'+listDateHtml+'</td><td><div '+listStressHtml+'></div></td></tr>';
+                var listKeywordsHtml ="";
+                if( todoList[i].listKeywords !== null && todoList[i].listKeywords.length > 0)
+                {
+                    var listKeywordsArr = JSON.parse(todoList[i].listKeywords)
+                    for(var a=0;a<listKeywordsArr.length;a++){
+                        listKeywordsHtml += '<span class="keywords">'+listKeywordsArr[a]+'</span>';
+                    }
+                }
+
+
+
+                html += '<tr '+bgColorControl+'><td>'+indexStepDown+indexStepUp+'</td><td>'+arrangementBut+deleteBut+'</td><td>'+listName+'</td><td>'+listDateHtml+'</td><td><div '+listStressHtml+'></div></td><td>'+listKeywordsHtml+'</td></tr>';
             }
             $("#todo-list-body").html(html);
           
@@ -71,7 +101,15 @@ function todoInsert()
     var listDate = $("#todoInsertDate").val()
     var listContent = tinymce.get("todoInsertContent").getContent()
     var listStress = $("#todoInsertStress").val()
+    var listKeywords = $("#todoInsertKeywords").val()
+
     
+    $("#todoInsertTitle").val("")
+    $("#todoInsertDate").val("")
+    tinymce.get("todoInsertContent").setContent("")
+    $("#todoInsertStress").val("")
+    $("#todoInsertKeywords").val("")
+
     if(listName && listStress)
     {
     }
@@ -85,13 +123,14 @@ function todoInsert()
             listName:listName,
             listDate:listDate,
             listContent:listContent,
-            listStress:listStress
+            listStress:listStress,
+            listKeywords:listKeywords
         },
         function(returnval){
         switch (parseInt(returnval)) {
             case 1:
                 alert("İşlem başarıyla gerçekleştirildi!")
-                refresh()
+                listIt()
                 break;
             case 0:
                 alert("İşlem sırasında bir hata oldu.")
@@ -114,6 +153,8 @@ function todoArrangement(el)
     var listDate = $("#todoUpdateDate").val()
     var listContent = tinymce.get("todoUpdateContent").getContent()
     var listStress = $("#todoUpdateStress").val()
+    var listKeywords = $("#todoUpdateKeywords").val()
+    
     if(listName && listStress)
     {
         $.post("/?/todoList/update/",{
@@ -121,14 +162,15 @@ function todoArrangement(el)
                 listName:listName,
                 listDate:listDate,
                 listContent:listContent,
-                listStress:listStress
+                listStress:listStress,
+                listKeywords:listKeywords
             },
             function(returnval){
                 setTimeout(function(){
                     switch (parseInt(returnval)) {
                         case 1:
                             alert("İşlem başarıyla gerçekleştirildi!")
-                            refresh()
+                            listIt()
                             break;
                         case 0:
                             alert("İşlem sırasında bir hata oldu.")
@@ -166,7 +208,7 @@ function todoDelete(el)
             if(parseInt(returnval) == 1)
             {
                 Swal.fire('İşlem başarıyla gerçekleştirildi!', '', 'success')
-                refresh()
+                listIt()
             }
         }).fail(function(){
             Swal.fire('İşlem sırasında bir hata oluştu.', '', 'info')
@@ -190,6 +232,24 @@ function arrangementModalIndex(el)
             $("#todoUpdateTitle").val(listEl.listName)
             $("#todoUpdateDate").val(listEl.listDate)
             $("#todoUpdateStress").val(listEl.listStress)
+
+            /* Keywords array indexes will merge into a string here*/
+            if( listEl.listKeywords !== null && listEl.listKeywords.length > 0)
+            {
+                var listKeywordsArr = JSON.parse(listEl.listKeywords)
+                var listKeywordsHtml = listKeywordsArr[0];
+                for(var i=1;i<listKeywordsArr.length;i++){
+                    listKeywordsHtml += ", "+listKeywordsArr[i];
+                }
+                $("#todoUpdateKeywords").val(listKeywordsHtml)
+            }
+            else
+            {
+                $("#todoUpdateKeywords").val(listEl.listKeywords)
+            }
+            
+
+            
             listEl.listContent = (listEl.listContent != null)? listEl.listContent:"";
             tinymce.get("todoUpdateContent").setContent(listEl.listContent)
             $("#exampleModal").modal("show");
@@ -202,4 +262,31 @@ function arrangementModalIndex(el)
     })
 }
 
-refresh()
+function reLocate(el)
+{
+    var index1 = el.dataset.id1;
+    var index2 = el.dataset.id2;
+
+    $.post("/?/todoList/reLocate/",{index1:index1,index2:index2},function(returnval){
+        switch (returnval) {
+            case "1":
+                listIt()
+                break;
+            case "0":
+                alert("İşlem sırasında bir hata oluştu.")
+                break;
+            default:
+                break;
+        }
+    }).fail(function(){
+        alert("İşlem sırasında bir hata oluştu.")
+    })
+}
+
+document.getElementById("listSearch").addEventListener("change",function(){
+    var searchval = document.getElementById("listSearch").value;
+    listIt("/?/todoList/search/",{search:searchval})
+
+},false)
+
+listIt()
