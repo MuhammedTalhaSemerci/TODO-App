@@ -1,0 +1,92 @@
+.todo-div
+{
+  
+    display:flex;
+    justify-content:center;
+
+}
+.todo-div-inner
+{
+    display:inline-block;
+    width:auto;
+    height:auto;
+    margin:40px;
+}
+.todo-table
+{
+    min-width:500px;
+    line-clamp: 3px;
+}
+
+.arrangement-but
+{
+    text-decoration: none;
+    border: 0px;
+    color:green;
+}
+
+.delete-but
+{
+    text-decoration: none;
+    border: 0px;
+    color:red;
+}
+
+.todo-insert-div
+{
+    width:60%;
+    margin:auto;
+    margin-top:20px;
+}
+
+td
+{
+    border-right: 1px solid black;
+    padding:4px;
+}
+
+tbody td
+{
+    border-top:1px solid black;
+}
+
+
+.bgColorControlR
+{
+    background-color: red;
+    color:white;
+}
+.bgColorControlY
+{
+    background-color: yellow;
+}
+.bgColorControlG
+{
+    background-color: green;
+}
+
+
+div.bgColorControlR
+{
+    background-color: #991d1d;
+    width:30px;
+    height:30px;
+    margin: auto;
+    border-radius: 20px;
+}
+div.bgColorControlY
+{
+    background-color: #c7c430;
+    width:30px;
+    height:30px;
+    margin: auto;
+    border-radius: 20px;
+}
+div.bgColorControlG
+{
+    background-color: #339e33;
+    width:30px;
+    height:30px;
+    margin: auto;
+    border-radius: 20px;
+}
